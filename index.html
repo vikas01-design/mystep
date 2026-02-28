@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .fade-out-left {
+            animation: fadeOutLeft 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOutLeft {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+        }
+
+        .app-section {
+            display: none;
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        .nav-link-active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .alert {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 16px;
+            max-width: 400px;
+            display: flex;
+            align-items: flex-start;
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .alert-description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .icon {
+            color: green;
+            font-size: 20px;
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+
+        /* Login page specific styles */
+        .login-container {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-tab {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .login-tab button {
+            flex: 1;
+            padding: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .login-tab button.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .login-form {
+            padding: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9ca3af;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.5);
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-link a {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link a:hover {
+            color: #2563eb;
+        }
+
+        .message {
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .login-footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .auth-section {
+            display: none;
+        }
+
+        .auth-section.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient-to-br from-slate-100 via-blue-50 to-purple-100 font-sans min-h-screen">
+
+        <!-- NAVBAR - Modified to show login/logout based on state -->
+        <div class="bg-white/70 backdrop-blur-lg shadow-sm py-4 px-6 md:px-8 flex justify-between items-center sticky top-0 z-40">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                MyStep
+            </h1>
+            <nav class="flex gap-4 text-sm font-medium items-center">
+                <button class="nav-link nav-link-active" data-target="hero">Home</button>
+                <button class="nav-link" data-target="register">Register</button>
+                <button class="nav-link" data-target="roadMaps">Roadmaps</button>
+                <button class="nav-link" data-target="bookMarks">Book Marks</button>
+                <button class="nav-link" data-target="myTasks">My Tasks</button>
+                <!-- Dynamic Login/Logout Button -->
+                <button id="navAuthBtn" onclick="handleAuthClick()" class="ml-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-medium hover:shadow-lg transition">
+                    Login
+                </button>
+            </nav>
+        </div>
+
+        <!-- LOGIN SECTION (New) -->
+        <section id="loginSection" class="app-section min-h-screen">
+            <div class="login-container">
+                <div class="login-card fade-in">
+                    <div class="login-header">
+                        <div class="login-logo">MyStep</div>
+                        <p class="text-white/90">Your Path. Your Growth. Your Future.</p>
+                    </div>
+
+                    <!-- Login Tabs -->
+                    <div class="login-tab">
+                        <button id="tabLogin" class="active" onclick="switchAuthTab('login')">Login</button>
+                        <button id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="loginForm" class="login-form auth-section active">
+                        <form onsubmit="handleLogin(event)">
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                                    <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</span>
+                                </div>
+                            </div>
+                            <div class="forgot-link">
+                                <a href="#" onclick="showForgotPassword(event)">Forgot password?</a>
+                            </div>
+                            <button type="submit" class="login-btn">Login to MyStep</button>
+                            <div id="loginMessage" class="message"></div>
+                        </form>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="signupForm" class="login-form auth-section hidden">
+                        <form onsubmit="handleSignup(event)">
+                            <div class="input-group">
+                                <label>Full Name</label>
+                                <input type="text" id="signupName" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Mobile</label>
+                                <input type="tel" id="signupMobile" placeholder="10 digit mobile number" pattern="[0-9]{10}" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="signupPassword" placeholder="Create password" required>
+                                    <span class="toggle-password" onclick="togglePassword('signupPassword', this)">👁️</span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Confirm Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="signupConfirmPassword" placeholder="Confirm password" required>
+                                    <span class="toggle-password" onclick="togglePassword('signupConfirmPassword', this)">👁️</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="login-btn">Create Account</button>
+                            <div id="signupMessage" class="message"></div>
+                        </form>
+                    </div>
+
+                    <!-- Forgot Password Form (initially hidden) -->
+                    <div id="forgotForm" class="login-form auth-section hidden">
+                        <form onsubmit="handleForgotPassword(event)">
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="forgotEmail" placeholder="Enter registered email" required>
+                            </div>
+                            <button type="submit" class="login-btn">Send Reset OTP</button>
+                            <div class="login-footer">
+                                <a href="#" onclick="switchAuthTab('login')">← Back to Login</a>
+                            </div>
+                            <div id="forgotMessage" class="message"></div>
+                        </form>
+                    </div>
+
+                    <!-- OTP Verification Form -->
+                    <div id="otpForm" class="login-form auth-section hidden">
+                        <form onsubmit="handleVerifyOTP(event)">
+                            <div class="input-group">
+                                <label>Enter OTP</label>
+                                <input type="text" id="otpInput" placeholder="4-digit OTP" maxlength="4" pattern="[0-9]{4}" required>
+                            </div>
+                            <button type="submit" class="login-btn">Verify OTP</button>
+                            <div class="login-footer">
+                                <a href="#" onclick="showForgotPassword(event)">← Back</a>
+                            </div>
+                            <div id="otpMessage" class="message"></div>
+                        </form>
+                    </div>
+
+                    <!-- Reset Password Form -->
+                    <div id="resetForm" class="login-form auth-section hidden">
+                        <form onsubmit="handleResetPassword(event)">
+                            <div class="input-group">
+                                <label>New Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="newPassword" placeholder="Enter new password" required>
+                                    <span class="toggle-password" onclick="togglePassword('newPassword', this)">👁️</span>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Confirm New Password</label>
+                                <div class="password-input">
+                                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
+                                    <span class="toggle-password" onclick="togglePassword('confirmNewPassword', this)">👁️</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="login-btn">Reset Password</button>
+                            <div class="login-footer">
+                                <a href="#" onclick="switchAuthTab('login')">← Back to Login</a>
+                            </div>
+                            <div id="resetMessage" class="message"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HERO -->
+        <section id="hero" class="app-section active fade-in">
+            <div class="bg-[url('https://res.cloudinary.com/dteitk0eq/image/upload/v1771670941/background_l9tzr0.avif')] h-screen bg-cover flex flex-col justify-center">
+                <div class="flex items-center justify-center space-x-6 px-4 py-4">
+                    <div class="flex items-end space-x-1 hover:scale-105 transition duration-300">
+                        <div class="w-2 h-6 bg-white rounded"></div>
+                        <div class="w-2 h-10 bg-white rounded"></div>
+                        <div class="w-2 h-14 bg-white rounded"></div>
+                        <div class="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[16px] border-b-white -ml-2"></div>
+                    </div>
+                    <div class="w-px h-16 bg-white"></div>
+                    <h1 class="text-white text-6xl font-extrabold tracking-wide drop-shadow-xl">
+                        My<span class="font-black">Step</span>
+                    </h1>
+                </div>
+
+                <p class="text-center text-white mt-4 text-lg opacity-90">Your Path. Your Growth. Your Future.</p>
+                <p class="text-center text-white mt-10 tracking-[0.3em] text-sm">ESTD 2026</p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-16 drop-shadow-xl font-roboto font-bold">
+                    <button onclick="switchSection('roadMaps')" class="bg-white px-6 py-3 rounded-2xl shadow-lg hover:scale-105 hover:bg-black hover:text-white transition duration-300">
+                        View Browser
+                    </button>
+                    <button onclick="switchSection('register')" class="bg-white px-6 py-3 rounded-2xl shadow-lg hover:scale-105 hover:bg-black hover:text-white transition duration-300">
+                        Get started >
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGISTER -->
+        <section id="register" class="app-section min-h-screen flex flex-col items-center justify-center py-10 px-4">
+            <!-- register card container: flex, centered, max-w-5xl, margin auto -->
+            <div id="register-card" class="flex w-full max-w-5xl rounded-2xl overflow-hidden shadow-2xl fade-in mx-auto">
+                <!-- Left panel (unchanged) -->
+                <div class="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 p-10 flex-col justify-center text-white mt-5 mb-5 rounded-bl-2xl rounded-tl-2xl">
+                    <h1 class="text-4xl font-bold mb-4">Welcome Back 👋</h1>
+                    <p class="text-lg opacity-90">
+                        Join our platform to explore opportunities, build your roadmap,
+                        and achieve your academic goals.
+                    </p>
+                </div>
+                <!-- Right panel (form) unchanged -->
+                <div class="w-full md:w-1/2 bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 backdrop-blur-xl p-10 mt-5 mb-4 text-white rounded-br-2xl rounded-tr-2xl">
+                    <h2 class="text-3xl font-bold mb-6">Register</h2>
+                    <div class="mb-5">
+                        <label for="regName" class="text-sm">Full Name</label>
+                        <input id="regName" type="text" placeholder="Enter Your Name..." class="mt-2 bg-white/10 border border-white/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-white/60 transition duration-300 w-full text-sm">
+                        <p id="regNameError" class="text-xs text-red-400 mt-1"></p>
+                    </div>
+                    <div class="mb-5">
+                        <label for="regBirth" class="text-sm">Date of Birth</label>
+                        <input id="regBirth" type="date" class="mt-2 bg-white/10 border border-white/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-white/60 transition duration-300 w-full text-sm">
+                        <p id="regBirthError" class="text-xs text-red-400 mt-1"></p>
+                    </div>
+                    <!-- Gender -->
+                    <div class="mb-5">
+                        <label class="text-sm block mb-2">Gender</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="regGender" value="Male" checked class="accent-blue-500">
+                                <span>Male</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="regGender" value="Female" class="accent-blue-500">
+                                <span>Female</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="radio" name="regGender" value="Other" class="accent-blue-500">
+                                <span>Other</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="regNationality" class="text-sm">Nationality</label>
+                        <input id="regNationality" type="text" placeholder="e.g. Indian" class="mt-2 bg-white/10 border border-white/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-white/60 transition duration-300 w-full text-sm">
+                        <p id="regNationalityError" class="text-xs text-red-400 mt-1"></p>
+                    </div>
+                    <div class="mb-6">
+                        <label for="regStatus" class="text-sm">Current Status</label>
+                        <select id="regStatus" class="mt-2 bg-purple-900 border border-white/30 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-white/60 transition duration-300 w-full text-sm">
+                            <option>Class 10</option>
+                            <option>Intermediate 1 Year</option>
+                            <option>Intermediate 2 Year</option>
+                            <option>B-Tech 1 Year</option>
+                        </select>
+                    </div>
+                    <button onclick="handleRegisterSubmit()" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-purple-600 hover:to-blue-500 py-2 rounded-lg font-semibold transition duration-300 text-sm">
+                        Submit
+                    </button>
+                </div>
+            </div>
+
+            <!-- stage selector after submit (unchanged) -->
+            <div id="logged-and-stage" class="hidden w-full flex flex-col items-center fade-in">
+                <div class="mt-10 mb-4">
+                    <div class="alert">
+                        <span class="icon">✔️</span>
+                        <div>
+                            <div class="alert-title">Account Logged successfully</div>
+                            <div class="alert-description">
+                                Your profile information has been saved. Changes will be reflected immediately.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-[#f8cdd8] to-[#cde8f8] w-[95%] md:w-[80%] lg:w-[60%] rounded-3xl shadow-md mt-8 mb-10 p-6">
+                    <p class="text-blue-600 font-semibold px-6 py-4">2 of 2</p>
+                    <h1 class="text-center text-3xl md:text-4xl font-bold text-gray-900 px-6">
+                        Choose Your Academic Stage
+                    </h1>
+                    <div class="m-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <button onclick="selectStage('after10')" class="p-6 bg-white shadow-lg rounded-2xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                            🎓 After 10th
+                        </button>
+                        <button onclick="selectStage('after12')" class="p-6 bg-white shadow-xl rounded-2xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                            🏫 After 12th
+                        </button>
+                        <button onclick="selectStage('degree')" class="p-6 bg-white shadow-lg rounded-2xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                            💻 B.Tech / Degree
+                        </button>
+                        <button class="p-6 bg-white shadow-lg rounded-2xl hover:scale-105 hover:bg-black hover:text-white transition text-left opacity-50 cursor-not-allowed" disabled>
+                            🎓 M.Tech (coming soon)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROADMAPS HUB -->
+        <section id="roadMaps" class="app-section fade-in min-h-screen flex flex-col items-center justify-center py-20">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-4 text-center">Choose Your Roadmap</h2>
+            <p class="text-gray-500 mb-12 text-lg text-center">Select the stage that fits you best</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl w-full px-6">
+                <button onclick="switchSection('nextStage')" class="p-8 bg-white rounded-3xl shadow-xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                    <div class="text-3xl mb-3">🎓</div>
+                    <h3 class="text-xl font-bold">After 10th</h3>
+                    <p class="text-sm text-gray-500 mt-1 hover:text-gray-300">Science, Commerce, Arts</p>
+                </button>
+
+                <button onclick="switchSection('after12')" class="p-8 bg-white rounded-3xl shadow-xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                    <div class="text-3xl mb-3">🏫</div>
+                    <h3 class="text-xl font-bold">After 12th</h3>
+                    <p class="text-sm text-gray-500 mt-1 hover:text-gray-300">MPC, BiPC, Commerce, Arts</p>
+                </button>
+
+                <button onclick="switchSection('degree')" class="p-8 bg-white rounded-3xl shadow-xl hover:scale-105 hover:bg-black hover:text-white transition text-left">
+                    <div class="text-3xl mb-3">💻</div>
+                    <h3 class="text-xl font-bold">Degree</h3>
+                    <p class="text-sm text-gray-500 mt-1 hover:text-gray-300">B.Tech, MBBS, BBA, Law</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- AFTER 10th ROADMAP -->
+        <section id="nextStage" class="app-section fade-in min-h-screen">
+            <div class="text-center py-16">
+                <h2 class="text-5xl font-extrabold text-gray-800">After 10th Roadmap</h2>
+                <p class="text-gray-600 mt-4 text-lg">Choose your stream and explore exams and skills.</p>
+                <button onclick="switchSection('roadMaps')" class="mt-6 text-sm text-blue-500 hover:underline">← Back to Roadmaps</button>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div onclick="selectStream('science')" id="scienceCard" class="streamCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-blue-600">Science</h4>
+                        <p class="text-sm text-gray-600">Engineering, Medicine, Research</p>
+                    </div>
+                    <div onclick="selectStream('commerce')" id="commerceCard" class="streamCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-purple-600">Commerce</h4>
+                        <p class="text-sm text-gray-600">Business, CA, Finance</p>
+                    </div>
+                    <div onclick="selectStream('arts')" id="artsCard" class="streamCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-green-600">Arts</h4>
+                        <p class="text-sm text-gray-600">Civil Services, Law, Media</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="after10Panel" class="hidden max-w-5xl mx-auto mt-16 mb-20 bg-white/70 backdrop-blur-2xl rounded-3xl shadow-2xl p-12 fade-in">
+                <h3 id="streamTitle" class="text-3xl font-bold mb-10"></h3>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Recommended Entrance Exams</h4>
+                        <ul id="streamExamList" class="space-y-2 text-gray-700"></ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4">Key Skills To Develop</h4>
+                        <ul id="streamSkillsList" class="space-y-2 text-gray-700"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AFTER 12th ROADMAP -->
+        <section id="after12" class="app-section fade-in min-h-screen">
+            <div class="text-center py-16">
+                <h2 class="text-5xl font-extrabold text-gray-800">After 12th Roadmap</h2>
+                <p class="text-gray-600 mt-4 text-lg">Choose your group and view timeline, exams and careers.</p>
+                <button onclick="switchSection('roadMaps')" class="mt-6 text-sm text-blue-500 hover:underline">← Back to Roadmaps</button>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div onclick="selectPath('mpc')" id="mpc" class="pathCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-blue-600">MPC</h4>
+                        <p class="text-sm text-gray-600">Engineering & Tech</p>
+                    </div>
+                    <div onclick="selectPath('bipc')" id="bipc" class="pathCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-green-600">BiPC</h4>
+                        <p class="text-sm text-gray-600">Medical & Life Sciences</p>
+                    </div>
+                    <div onclick="selectPath('commerce')" id="after12Commerce" class="pathCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-purple-600">Commerce</h4>
+                        <p class="text-sm text-gray-600">Finance & Business</p>
+                    </div>
+                    <div onclick="selectPath('arts')" id="after12Arts" class="pathCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-orange-600">Arts</h4>
+                        <p class="text-sm text-gray-600">Law & Public Services</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="after12Panel" class="hidden max-w-5xl mx-auto mt-20 mb-20 bg-white/70 backdrop-blur-2xl rounded-3xl shadow-2xl p-12 fade-in">
+                <h3 id="pathTitle" class="text-3xl font-bold mb-10"></h3>
+                <div class="relative pl-8 border-l-4 border-blue-400 mb-12" id="timeline"></div>
+
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold mb-4">Entrance Exams</h4>
+                    <ul id="after12ExamList" class="space-y-2 text-gray-700"></ul>
+                </div>
+
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold mb-4">Career Specializations</h4>
+                    <div id="careerOptions" class="flex flex-wrap gap-3 text-sm"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Path Progress</h4>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-600">Completion</span>
+                        <span id="after12ProgressText" class="text-sm font-semibold text-blue-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
+                        <div id="after12ProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                    <div id="after12Checklist" class="space-y-3 text-sm"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEGREE ROADMAP -->
+        <section id="degree" class="app-section fade-in min-h-screen">
+            <div class="text-center py-16">
+                <h2 class="text-5xl font-extrabold text-gray-800">Degree Roadmap Planner</h2>
+                <p class="text-gray-600 mt-4 text-lg">Choose your degree and explore a year-by-year roadmap.</p>
+                <button onclick="switchSection('roadMaps')" class="mt-6 text-sm text-blue-500 hover:underline">← Back to Roadmaps</button>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div onclick="selectDegree('btech')" id="btech" class="degreeCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-blue-600">B.Tech</h4>
+                        <p class="text-sm text-gray-600">Engineering</p>
+                    </div>
+                    <div onclick="selectDegree('mbbs')" id="mbbs" class="degreeCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-green-600">MBBS</h4>
+                        <p class="text-sm text-gray-600">Medical</p>
+                    </div>
+                    <div onclick="selectDegree('bba')" id="bba" class="degreeCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-purple-600">BBA</h4>
+                        <p class="text-sm text-gray-600">Business</p>
+                    </div>
+                    <div onclick="selectDegree('law')" id="law" class="degreeCard bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-xl cursor-pointer transition hover:scale-105 border-2 border-transparent">
+                        <h4 class="font-bold text-orange-600">LLB</h4>
+                        <p class="text-sm text-gray-600">Law</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="degreePanel" class="hidden max-w-5xl mx-auto mt-20 mb-20 bg-white/70 backdrop-blur-2xl rounded-3xl shadow-2xl p-12 fade-in">
+                <h3 id="degreeTitle" class="text-3xl font-bold mb-10"></h3>
+                <div class="relative pl-8 border-l-4 border-blue-400 mb-12" id="yearTimeline"></div>
+
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold mb-4">Core Skills To Build</h4>
+                    <ul id="skillsList" class="space-y-2 text-gray-700"></ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Degree Progress</h4>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-600">Completion</span>
+                        <span id="degreeProgressText" class="text-sm font-semibold text-blue-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
+                        <div id="degreeProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                    <div id="checklist" class="space-y-3 text-sm"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOOKMARKS -->
+        <section id="bookMarks" class="app-section fade-in min-h-screen flex items-center justify-center">
+            <div class="text-center">
+                <div class="text-6xl mb-4">🔖</div>
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-4">Book Marks</h2>
+                <p class="text-gray-500 text-lg mb-8">Your saved roadmaps and resources will appear here.</p>
+                <div id="bookmarkList" class="max-w-2xl mx-auto space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- MY TASKS -->
+        <section id="myTasks" class="app-section fade-in min-h-screen py-20 px-6">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12">
+                    <div class="text-6xl mb-4">✅</div>
+                    <h2 class="text-4xl font-extrabold text-gray-800 mb-4">My Tasks</h2>
+                    <p class="text-gray-500 text-lg">Track your mock test preparation progress.</p>
+                </div>
+
+                <div class="bg-white/70 backdrop-blur-2xl rounded-3xl shadow-2xl p-10">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Mock Test Papers</h3>
+                    <p class="text-gray-500 text-sm mb-8">Check off each exam as you complete a mock test.</p>
+
+                    <!-- NTA Quiz Link -->
+                    <a href="https://www.nta.ac.in/quiz" target="_blank" class="flex items-center gap-3 p-4 mb-4 bg-blue-50 border border-blue-200 rounded-2xl hover:bg-blue-100 transition group">
+                        <div class="text-2xl">📝</div>
+                        <div>
+                            <p class="font-semibold text-blue-700 group-hover:underline">NTA Official Mock Tests</p>
+                            <p class="text-sm text-gray-500">Practice on the official NTA quiz portal</p>
+                        </div>
+                        <span class="ml-auto text-blue-400 text-lg">→</span>
+                    </a>
+
+                    <a href="https://eapcet.tgche.ac.in/TGEAPCET/EAPCET_MockTest.aspx" target="_blank" class="flex items-center gap-3 p-4 mb-8 bg-purple-50 border border-purple-200 rounded-2xl hover:bg-purple-100 transition group">
+                        <div class="text-2xl">📋</div>
+                        <div>
+                            <p class="font-semibold text-purple-700 group-hover:underline">EAPCET Official Mock Tests</p>
+                            <p class="text-sm text-gray-500">Practice on the official TS EAPCET portal</p>
+                        </div>
+                        <span class="ml-auto text-purple-400 text-lg">→</span>
+                    </a>
+
+                    <!-- Progress Bar -->
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-600">Completion</span>
+                        <span id="taskProgressText" class="text-sm font-semibold text-blue-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-8">
+                        <div id="taskProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+
+                    <!-- Task List -->
+                    <div id="taskChecklist" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
